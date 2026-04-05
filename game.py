@@ -136,7 +136,15 @@ class QuizGame:
         print("\n퀴즈가 추가되었습니다!")
 
     def list_quiz(self):    # 퀴즈 목록
-        pass
+        if len(self.quizzes) == 0:
+            print("등록된 퀴즈가 없습니다.")
+            return
+
+        print(f"\n등록된 퀴즈 목록 (총 {len(self.quizzes)}개)")
+        print("----------------------------------------")
+        for i, quiz in enumerate(self.quizzes, start=1):
+            print(f"[{i}] {quiz.question}")
+        print("----------------------------------------")
 
     def show_score(self):   # 점수 확인
         pass
