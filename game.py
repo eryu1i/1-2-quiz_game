@@ -1,7 +1,7 @@
 import json
-from os import copy_file_range
 import random
 import datetime
+import os
 from quiz import DEFAULT_QUIZZES, Quiz
 
 class QuizGame:
@@ -27,7 +27,7 @@ class QuizGame:
             except ValueError:
                 print("숫자를 입력해주세요.")
             except (KeyboardInterrupt, EOFError):
-                print("\n게임을 종료합니다.")
+                print("\n퀴즈 풀기를 취소합니다.")
                 return
 
         quizzes = self.quizzes[:]
@@ -59,7 +59,7 @@ class QuizGame:
                 except ValueError:
                     print("숫자 또는 h를 입력하세요.")
                 except (KeyboardInterrupt, EOFError):
-                    print("\n게임을 종료합니다.")
+                    print("\n퀴즈 풀기를 취소합니다.")
                     return
 
             if quiz.check_answer(user_answer):
@@ -210,7 +210,7 @@ class QuizGame:
             except (KeyboardInterrupt, EOFError):
                 print("\n퀴즈 삭제를 취소합니다.")
                 return
-                
+
     def save(self):         # state.json 저장
         data = {
             "quizzes": [
@@ -252,3 +252,23 @@ class QuizGame:
             print("데이터가 손상되었습니다. 기본 데이터로 초기화합니다.")
             self.quizzes = DEFAULT_QUIZZES
             self.best_score = 0
+
+    def reset(self):
+        while True:
+            try:
+                confirm = input("정말 초기화하시겠습니까? (y/n): ").strip()
+                if confirm == "y":
+                    os.remove("state.json")
+                    self.quizzes = DEFAULT_QUIZZES
+                    self.best_score = 0
+                    self.history = []
+                    print("초기화되었습니다.")
+                    return
+                elif confirm == "n":
+                    print("초기화를 취소합니다.")
+                    return
+                else:
+                    print("y 또는 n을 입력하세요.")
+            except (KeyboardInterrupt, EOFError):
+                print("\n초기화를 취소합니다.")
+                return
