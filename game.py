@@ -1,4 +1,4 @@
-from ast import While
+import json
 import random
 from quiz import DEFAULT_QUIZZES
 
@@ -153,7 +153,23 @@ class QuizGame:
         pass
 
     def save(self):         # state.json 저장
-        pass
+        data = {
+            "quizzes" : [
+                {
+                    "question" : quiz.question,
+                    "choices" : quiz.choices,
+                    "answer" : quiz.answer,
+                    "hint" : quiz.hint
+                }
+                for quiz in self.quizzes
+            ],
+            "best_score" : self.best_score
+        }
+        try:
+            with open("state.json", "w", encoding="utf-8") as f:
+                json.dump(data, f, ensure_ascii=False, indent=4)
+        except Exception as e:
+            print(f"저장 중 오류가 발생했습니다: {e}")
 
     def load(self):         # state.json 불러오기
         pass
