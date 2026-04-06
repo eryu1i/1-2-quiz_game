@@ -7,6 +7,7 @@
 4. [기능 목록](#기능-목록)
 5. [파일 구조](#파일-구조)
 6. [데이터 파일 설명](#데이터-파일-설명-statejson)
+7. [스크린샷](#스크린샷)
 
 ## 프로젝트 개요
 텍사스 홀덤 포커에 관한 퀴즈를 풀 수 있는 터미널 기반 퀴즈 게임입니다.
@@ -32,10 +33,11 @@ python3 main.py
 ## 파일 구조
 ```
 1-2-quiz_game/
-├── main.py       # 프로그램 진입점, 메뉴 처리
-├── game.py       # QuizGame 클래스, 게임 로직
-├── quiz.py       # Quiz 클래스, 기본 퀴즈 데이터
-├── state.json    # 퀴즈 데이터 및 게임 기록 저장
+├── main.py         # 프로그램 진입점, 메뉴 처리
+├── game.py         # QuizGame 클래스, 게임 로직
+├── quiz.py         # Quiz 클래스, 기본 퀴즈 데이터
+├── state.json      # 퀴즈 데이터 및 게임 기록 저장
+├── state.json.bak  # state.json 백업 파일
 ├── .gitignore
 └── README.md
 ```
@@ -64,4 +66,26 @@ python3 main.py
         }
     ]
 }
-```<-- clone 실습 -->
+
+## 스크린샷
+
+### 개발 환경
+![개발 환경](docs/screenshots/dev_version.png)
+
+### 퀴즈 풀기
+![퀴즈 풀기](docs/screenshots/quiz_play.png)
+
+### 퀴즈 목록
+![퀴즈 목록](docs/screenshots/quiz_list.png)
+
+### 점수 확인
+![점수 확인](docs/screenshots/records.png)
+
+### 퀴즈 추가
+![퀴즈 추가](docs/screenshots/add_quiz.png)
+
+### 퀴즈 삭제
+![퀴즈 삭제](docs/screenshots/delete_quiz.png)
+
+### git log --oneline --graph 결과
+![git log](docs/screenshots/git_log.png)
