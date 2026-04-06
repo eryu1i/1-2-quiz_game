@@ -235,39 +235,48 @@ class QuizGame:
             if os.path.exists("state.json.bak"):
                 os.rename("state.json.bak", "state.json")  # 백업 복구
 
-    def load(self):         # state.json 불러오기
-        try:
-            with open("state.json", "r", encoding="utf-8") as f:
+    def load(self):
+        def load_from_file(filepath):  # 파일에서 데이터 읽는 내부 함수
+            with open(filepath, "r", encoding="utf-8") as f:
                 data = json.load(f)
                 self.quizzes = [
-                    Quiz(
-                        question=q["question"],
-                        choices=q["choices"],
-                        answer=q["answer"],
-                        hint=q["hint"]
-                    )
+                    Quiz(question=q["question"], choices=q["choices"], answer=q["answer"], hint=q["hint"])
                     for q in data["quizzes"]
                 ]
                 self.best_score = data.get("best_score", 0)
                 self.history = data.get("history", [])
+
+        def use_default():  # 기본 데이터로 초기화하는 내부 함수
+            self.quizzes = DEFAULT_QUIZZES
+            self.best_score = 0
+            self.history = []
+
+        try:
+            load_from_file("state.json")
         except FileNotFoundError:
             if os.path.exists("state.json.bak"):
                 print("백업 파일에서 복구합니다.")
-                os.rename("state.json.bak", "state.json")
-                self.load()
+                try:
+                    load_from_file("state.json.bak")
+                    os.rename("state.json.bak", "state.json")
+                except Exception:
+                    print("백업도 손상되었습니다. 기본 데이터로 초기화합니다.")
+                    use_default()
             else:
-                self.quizzes = DEFAULT_QUIZZES
-        except Exception as e:
+                use_default()
+        except Exception:
             print("데이터가 손상되었습니다.")
             if os.path.exists("state.json.bak"):
                 print("백업 파일에서 복구합니다.")
-                os.rename("state.json.bak", "state.json")
-                self.load()
+                try:
+                    load_from_file("state.json.bak")
+                    os.rename("state.json.bak", "state.json")
+                except Exception:
+                    print("백업도 손상되었습니다. 기본 데이터로 초기화합니다.")
+                    use_default()
             else:
                 print("백업이 없습니다. 기본 데이터로 초기화합니다.")
-                self.quizzes = DEFAULT_QUIZZES
-                self.best_score = 0
-                self.history = []
+                use_default()
 
     def reset(self):
         while True:
