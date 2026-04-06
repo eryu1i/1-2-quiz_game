@@ -232,6 +232,8 @@ class QuizGame:
                 json.dump(data, f, ensure_ascii=False, indent=4)
         except Exception as e:
             print(f"저장 중 오류가 발생했습니다: {e}")
+            if os.path.exists("state.json.bak"):
+                os.rename("state.json.bak", "state.json")  # 백업 복구
 
     def load(self):         # state.json 불러오기
         try:
@@ -249,10 +251,16 @@ class QuizGame:
                 self.best_score = data.get("best_score", 0)
                 self.history = data.get("history", [])
         except FileNotFoundError:
-            self.quizzes = DEFAULT_QUIZZES
-        except Exception as e:
-            print("데이터가 손상되었습니다. 백업에서 복구합니다.")
             if os.path.exists("state.json.bak"):
+                print("백업 파일에서 복구합니다.")
+                os.rename("state.json.bak", "state.json")
+                self.load()
+            else:
+                self.quizzes = DEFAULT_QUIZZES
+        except Exception as e:
+            print("데이터가 손상되었습니다.")
+            if os.path.exists("state.json.bak"):
+                print("백업 파일에서 복구합니다.")
                 os.rename("state.json.bak", "state.json")
                 self.load()
             else:
@@ -266,7 +274,10 @@ class QuizGame:
             try:
                 confirm = input("정말 초기화하시겠습니까? (y/n): ").strip()
                 if confirm == "y":
-                    os.remove("state.json")
+                    if os.path.exists("state.json"):
+                        os.remove("state.json")
+                    if os.path.exists("state.json.bak"):
+                        os.remove("state.json.bak")
                     self.quizzes = DEFAULT_QUIZZES
                     self.best_score = 0
                     self.history = []
