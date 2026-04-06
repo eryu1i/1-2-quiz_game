@@ -1,4 +1,5 @@
 import json
+from os import copy_file_range
 import random
 import datetime
 from quiz import DEFAULT_QUIZZES, Quiz
@@ -172,8 +173,44 @@ class QuizGame:
         print("========================================")
 
     def delete_quiz(self):  # 퀴즈 삭제
-        pass
+        if len(self.quizzes) == 0:
+            print("등록된 퀴즈가 없습니다.")
+            return
 
+        self.list_quiz()
+
+        while True:
+            try:
+                num = int(input(f"\n삭제할 퀴즈 번호 (1 ~ {len(self.quizzes)}): ").strip())
+                if num < 1 or num > len(self.quizzes):
+                    print(f"1 ~ {len(self.quizzes)} 사이의 숫자를 입력하세요.")
+                else:
+                    break
+            except ValueError:
+                print("숫자를 입력해주세요.")
+            except (KeyboardInterrupt, EOFError):
+                print("\n퀴즈 삭제를 취소합니다.")
+                return
+
+        print(f"\n[{num}] {self.quizzes[num-1].question}")
+
+        while True:
+            try:
+                confirm = input("정말 삭제하시겠습니까? (y/n): ").strip()
+                if confirm == "y":
+                    self.quizzes.pop(num-1)
+                    print("퀴즈가 삭제되었습니다.")
+                    self.save()
+                    return
+                elif confirm == "n":
+                    print("삭제를 취소합니다.")
+                    return
+                else:
+                    print("y 또는 n을 입력하세요.")
+            except (KeyboardInterrupt, EOFError):
+                print("\n퀴즈 삭제를 취소합니다.")
+                return
+                
     def save(self):         # state.json 저장
         data = {
             "quizzes": [
