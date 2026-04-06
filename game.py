@@ -1,10 +1,12 @@
 import json
 import random
 from quiz import DEFAULT_QUIZZES
+import quiz
 
 class QuizGame:
     def __init__(self):
-        self.quizzes = DEFAULT_QUIZZES
+        self.quizzes = []
+        self.load()
         self.best_score = 0
 
     def play(self):          # 퀴즈 풀기
@@ -172,4 +174,22 @@ class QuizGame:
             print(f"저장 중 오류가 발생했습니다: {e}")
 
     def load(self):         # state.json 불러오기
-        pass
+        try:
+            with open("state.json", "r", encoding="utf-8") as f:
+                data = json.load(f)
+                self.quizzes = [
+                    Quiz(
+                        question=q["question"],
+                        choices=q["choices"],
+                        answer=q["answer"],
+                        hint=q["hint"]
+                    )
+                    for q in data["quizzes"]
+                ]
+                self.best_score = data["best_score"]
+        except FileNotFoundError:
+            self.quizzes = DEFAULT_QUIZZES
+        except Exception as e:
+            print("데이터가 손상되었습니다. 기본 데이터로 초기화합니다.")
+            self.quizzes = DEFAULT_QUIZZES
+            self.best_score = 0
