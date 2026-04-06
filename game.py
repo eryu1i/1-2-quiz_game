@@ -212,6 +212,8 @@ class QuizGame:
                 return
 
     def save(self):         # state.json 저장
+        if os.path.exists("state.json"):
+            os.rename("state.json", "state.json.bak")   # 백업
         data = {
             "quizzes": [
                 {
@@ -249,9 +251,15 @@ class QuizGame:
         except FileNotFoundError:
             self.quizzes = DEFAULT_QUIZZES
         except Exception as e:
-            print("데이터가 손상되었습니다. 기본 데이터로 초기화합니다.")
-            self.quizzes = DEFAULT_QUIZZES
-            self.best_score = 0
+            print("데이터가 손상되었습니다. 백업에서 복구합니다.")
+            if os.path.exists("state.json.bak"):
+                os.rename("state.json.bak", "state.json")
+                self.load()
+            else:
+                print("백업이 없습니다. 기본 데이터로 초기화합니다.")
+                self.quizzes = DEFAULT_QUIZZES
+                self.best_score = 0
+                self.history = []
 
     def reset(self):
         while True:
