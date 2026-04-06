@@ -1,13 +1,14 @@
 import json
 import random
-from quiz import DEFAULT_QUIZZES
-import quiz
+import datetime
+from quiz import DEFAULT_QUIZZES, Quiz
 
 class QuizGame:
     def __init__(self):
         self.quizzes = []
-        self.load()
         self.best_score = 0
+        self.history = []
+        self.load()
 
     def play(self):          # 퀴즈 풀기
 
@@ -81,6 +82,14 @@ class QuizGame:
             print(f"최고 점수 : {self.best_score}점")
         print("========================================")
 
+        # save history
+        self.history.append({
+            "date": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "count": count,
+            "score": score
+        })
+        self.save()
+
 
     def add_quiz(self):     # 퀴즈 추가
         print("\n새로운 퀴즈를 추가합니다.")
@@ -136,6 +145,7 @@ class QuizGame:
 
         self.quizzes.append(Quiz(question, choices, answer, hint))
         print("\n퀴즈가 추가되었습니다!")
+        self.save()
 
     def list_quiz(self):    # 퀴즈 목록
         if len(self.quizzes) == 0:
@@ -149,23 +159,34 @@ class QuizGame:
         print("----------------------------------------")
 
     def show_score(self):   # 점수 확인
-        pass
+        if len(self.history) == 0:
+            print("아직 퀴즈를 풀지 않았습니다.")
+            return
+
+        print(f"\n최고 점수 : {self.best_score}")
+        print("\n========================================")
+        print("게임 기록")
+        print("========================================")
+        for record in self.history:
+            print(f"{record['date']} | {record['count']}문제 | {record['score']}점")
+        print("========================================")
 
     def delete_quiz(self):  # 퀴즈 삭제
         pass
 
     def save(self):         # state.json 저장
         data = {
-            "quizzes" : [
+            "quizzes": [
                 {
-                    "question" : quiz.question,
-                    "choices" : quiz.choices,
-                    "answer" : quiz.answer,
-                    "hint" : quiz.hint
+                    "question": quiz.question,
+                    "choices": quiz.choices,
+                    "answer": quiz.answer,
+                    "hint": quiz.hint
                 }
                 for quiz in self.quizzes
             ],
-            "best_score" : self.best_score
+            "best_score": self.best_score,
+            "history": self.history
         }
         try:
             with open("state.json", "w", encoding="utf-8") as f:
@@ -186,7 +207,8 @@ class QuizGame:
                     )
                     for q in data["quizzes"]
                 ]
-                self.best_score = data["best_score"]
+                self.best_score = data.get("best_score", 0)
+                self.history = data.get("history", [])
         except FileNotFoundError:
             self.quizzes = DEFAULT_QUIZZES
         except Exception as e:
